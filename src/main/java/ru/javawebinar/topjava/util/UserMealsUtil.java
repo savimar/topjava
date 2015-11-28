@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
+
 /**
  * GKislin
  * 31.05.2015.
@@ -28,11 +30,17 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed> getFilteredMealsWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Stream<UserMeal> streamMealFilter = mealList.stream();
-        List<UserMealWithExceed> userMealWithExceeds = streamMealFilter
+        Map<LocalDate, Boolean> mapCalories = getListDateUnique(mealList)
+                .stream()
+                .collect(Collectors.toMap(
+                        (p -> p),
+                        p -> getAllCaloriesForDay(mealList, p, caloriesPerDay)));
+
+        List<UserMealWithExceed> userMealWithExceeds = mealList
+                .stream()
                 .filter((m) -> TimeUtil.isBetween(m.getDateTime().toLocalTime(), startTime, endTime))
                 .map((s) -> new UserMealWithExceed(s.getDateTime(), s.getDescription(), s.getCalories(),
-                        (getAllCaloriesForDay(mealList, s.getDateTime().toLocalDate(), caloriesPerDay))))
+                        (mapCalories.get(s.getDateTime().toLocalDate()))))
                 .sorted((o1, o2) -> o1.getDateTime().compareTo(o2.getDateTime()))
                 .collect(Collectors.toList());
 
@@ -73,10 +81,18 @@ public class UserMealsUtil {
                 .mapToInt(UserMeal::getCalories)
                 .sum();
 
-        if (count > caloriesPerDay)
-            return true;
-        else
-            return false;
+        return count > caloriesPerDay;
+
+    }
+
+    public static List<LocalDate> getListDateUnique(List<UserMeal> mealList) {
+        List<LocalDate> list = mealList.stream()
+                .map((m) -> m.getDateTime().toLocalDate())
+                .unordered()
+                .distinct()
+                .collect(Collectors.toList());
+        return list;
+
     }
 
 
