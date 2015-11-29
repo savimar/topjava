@@ -11,7 +11,7 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Maria on 27.11.2015.
