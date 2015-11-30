@@ -52,10 +52,10 @@ public class UserMealsUtil {
                 .map((s) -> new UserMealWithExceed(s.getDateTime(), s.getDescription(), s.getCalories(),
                         ((mapCalories.get(s.getDateTime().toLocalDate()) > caloriesPerDay))))
                 .sorted((o1, o2) -> o1.getDateTime().compareTo(o2.getDateTime()))
-                .map(m -> {
+               /* .map(m -> {
                     System.out.println(m.getDateTime() + " " + m.getDescription() + " " + m.getCalories() + " " + m.isExceed());
                     return m;
-                })
+                })*/
                 .collect(Collectors.toList());
 
 
